@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+)
 
 // Model for Course - file
 type Course struct {
@@ -25,4 +29,19 @@ type Author struct {
 
 func main() {
 	fmt.Println("Welcome to Basic API Building")
+}
+
+// controllers - file
+
+// serve home route
+func serveHome(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("<h1>Welcome to API by LearnCodeOnline.in</h1>"))
+}
+
+// get all courses data
+func getAllCourses(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Get all courses")
+	// setting headers
+	w.Header().Set("content-Type", "application/json")
+	json.NewEncoder(w).Encode(courses)
 }

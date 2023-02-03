@@ -3,7 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -21,7 +24,8 @@ var courses []Course
 
 // middleware, helper - file
 func (c *Course) IsEmpty() bool {
-	return c.CourseId == "" && c.CourseName == ""
+	// return c.CourseId == "" && c.CourseName == ""
+	return c.CourseName == ""
 }
 
 type Author struct {
@@ -33,7 +37,7 @@ func main() {
 	fmt.Println("Welcome to Basic API Building")
 }
 
-// controllers - file
+// services - file
 
 // serve home route
 func serveHome(w http.ResponseWriter, r *http.Request) {
@@ -54,7 +58,7 @@ func getOneCourse(w http.ResponseWriter, r *http.Request) {
 	// setting headers
 	w.Header().Set("content-Type", "application/json")
 
-	// gran id from request
+	// grab id from request
 	params := mux.Vars(r)
 	fmt.Println(params) // exercise
 
@@ -66,5 +70,32 @@ func getOneCourse(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	json.NewEncoder(w).Encode("No Course found with given " + params["id"])
+}
 
+// Add a course service in go lang
+func createOneCourse(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Create one course")
+	// setting headers
+	w.Header().Set("content-Type", "application/json")
+
+	// what if: body is empty
+	if r.Body == nil {
+		json.NewEncoder(w).Encode("Please send some data")
+	}
+
+	// what about - {}
+	var course Course
+	_ = json.NewDecoder(r.Body).Decode(&course)
+	if course.IsEmpty() {
+		json.NewEncoder(w).Encode("Please fill  course name" )
+	return
+	}
+
+	// generate unique id, string
+	rand.Seed(time.Now().UnixNano())
+	course.CourseId = strconv.Itoa(rand.Intn(1000))
+
+	// append course into fake db courses
+	courses = append(courses, course)
+	json.NewEncoder(w).Encode(course)
 }

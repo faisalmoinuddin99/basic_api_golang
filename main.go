@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 // Model for Course - file
@@ -44,4 +46,25 @@ func getAllCourses(w http.ResponseWriter, r *http.Request) {
 	// setting headers
 	w.Header().Set("content-Type", "application/json")
 	json.NewEncoder(w).Encode(courses)
+}
+
+// Get  one course based on request course Id in go lang
+func getOneCourse(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Get one course")
+	// setting headers
+	w.Header().Set("content-Type", "application/json")
+
+	// gran id from request
+	params := mux.Vars(r)
+	fmt.Println(params) // exercise
+
+	// loop through courses, find matching id and return response
+	for _, course := range courses {
+		if course.CourseId == params["id"] {
+			json.NewEncoder(w).Encode(course)
+			return
+		}
+	}
+	json.NewEncoder(w).Encode("No Course found with given " + params["id"])
+
 }

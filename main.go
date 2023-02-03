@@ -87,8 +87,8 @@ func createOneCourse(w http.ResponseWriter, r *http.Request) {
 	var course Course
 	_ = json.NewDecoder(r.Body).Decode(&course)
 	if course.IsEmpty() {
-		json.NewEncoder(w).Encode("Please fill  course name" )
-	return
+		json.NewEncoder(w).Encode("Please fill  course name")
+		return
 	}
 
 	// generate unique id, string
@@ -113,7 +113,7 @@ func updateOneCourse(w http.ResponseWriter, r *http.Request) {
 
 	for index, course := range courses {
 		if course.CourseId == params["id"] {
-			courses = append(courses[:index], courses[index + 1:]...)
+			courses = append(courses[:index], courses[index+1:]...)
 			var course Course
 			_ = json.NewDecoder(r.Body).Decode(&course)
 
@@ -124,5 +124,23 @@ func updateOneCourse(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-// TODO: send a response when id is not found
+	// TODO: send a response when id is not found
+}
+
+// Delete a course service in go lang
+func deleteOneCourse(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Delete one course")
+	// setting headers
+	w.Header().Set("content-Type", "application/json")
+
+	params := mux.Vars(r)
+
+	// loop, id, remove (index, index + 1)
+	for index, course := range courses {
+		if course.CourseId == params["id"] {
+			courses = append(courses[:index], courses[index+1:]...)
+			break
+		}
+	}
+	json.NewEncoder(w).Encode("Deleted " + params["id"] + "successfully")
 }

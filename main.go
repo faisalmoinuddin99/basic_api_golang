@@ -99,3 +99,30 @@ func createOneCourse(w http.ResponseWriter, r *http.Request) {
 	courses = append(courses, course)
 	json.NewEncoder(w).Encode(course)
 }
+
+// Update a course service in go lang
+func updateOneCourse(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Update one course")
+	// setting headers
+	w.Header().Set("content-Type", "application/json")
+
+	// first - grab id from request
+	params := mux.Vars(r)
+
+	// loop, id, remove, add with my ID
+
+	for index, course := range courses {
+		if course.CourseId == params["id"] {
+			courses = append(courses[:index], courses[index + 1:]...)
+			var course Course
+			_ = json.NewDecoder(r.Body).Decode(&course)
+
+			course.CourseId = params["id"]
+			courses = append(courses, course)
+
+			json.NewEncoder(w).Encode(courses)
+			return
+		}
+	}
+// TODO: send a response when id is not found
+}
